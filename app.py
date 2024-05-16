@@ -1,6 +1,8 @@
-import tkinter as tk
+import os
 from tkinter import *
+import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 import scripts as cf
 
@@ -21,6 +23,15 @@ class App(tk.Tk):
         self._frame.pack()
 
 
+class Base(tk.Frame):
+    def __init__(self, master):
+        super().__init__(master)
+        self.add_home_button(master)
+
+    def add_home_button(self, master):
+        button = tk.Button(self, text="Home Page", command=lambda: master.switch_frame(HomePage))
+        button.pack(anchor='w', padx=10, pady=10)
+
 
 class ConnectionPage(tk.Frame):
     def __init__(self, master):
@@ -28,6 +39,12 @@ class ConnectionPage(tk.Frame):
 
         label = tk.Label(self, text="Connect to Cloudflare Account", font=('Times', '20'))
         label.pack(pady=10,padx=10)
+
+        env_conn_btn = tk.Button(self, text='Connect Using Environment Variables', command=self.conn_with_env)
+        env_conn_btn.pack(pady=5)
+
+        separator = ttk.Separator(self, orient='horizontal')
+        separator.pack(fill='x', padx=15, pady=10)
 
         tk.Label(self, text='API Key:').pack()
         self.api_key = tk.Entry(self)
@@ -37,12 +54,25 @@ class ConnectionPage(tk.Frame):
         self.email = tk.Entry(self)
         self.email.pack()
 
-        test_conn_btn = tk.Button(self, text='Test Connection', command=self.check_connection)
-        test_conn_btn.pack(pady=5)
+        conn_btn = tk.Button(self, text='Connect', command=self.conn)
+        conn_btn.pack(pady=5)
 
-    def check_connection(self):
+    def conn(self):
         api_key = self.api_key.get()
         email = self.email.get()
+
+        if cf.validate_key(api_key=api_key, email=email):
+            messagebox.showinfo('Success', 'Connection Established')
+            self.master.switch_frame(HomePage)
+        else:
+            messagebox.showerror('Error', 'Connection Failed')
+
+    def conn_with_env(self):
+        try:
+            api_key = os.environ['CLOUDFLARE_API_KEY']
+            email = os.environ['CLOUDFLARE_EMAIL']
+        except:
+            messagebox.showerror('Error', 'Could Not Find Environment Variables')
 
         if cf.validate_key(api_key=api_key, email=email):
             messagebox.showinfo('Success', 'Connection Established')
@@ -56,8 +86,64 @@ class HomePage(tk.Frame):
         super().__init__(master)
         master.geometry('720x550')
 
-        label = tk.Label(self, text="Cloudflare Manager", font=('Times', '20'))
-        label.pack(pady=10,padx=10)
+        heading = tk.Label(self, text="Cloudflare Manager", font=('Times', '20'))
+        heading.pack(pady=10,padx=10)
+
+        zone_btn = tk.Button(self, text='Zones', command=lambda: master.switch_frame(ZonePage))
+        zone_btn.pack(pady=5)
+
+        records_btn = tk.Button(self, text='DNS Records', command=lambda: master.switch_frame(RecordsPage))
+        records_btn.pack(pady=5)
+
+
+class ZonePage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+    
+        heading = tk.Label(self, text="Zone Manager", width=80, font=('Times', '20'))
+        heading.pack(pady=10, padx=10)
+
+
+class RecordsPage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
+        heading = tk.Label(self, text="DNS Records Manager", width=80, font=('Times', '20'))
+        heading.pack(pady=10,padx=10)
+
+        search_and_replace_btn = tk.Button(self, text="Search and Replace", command=lambda: master.switch_frame(SearchAndReplacePage))
+        search_and_replace_btn.pack(pady=5)
+
+
+class SearchAndReplacePage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
+
+class SearchAndAddPage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
+
+class SearchAndRemovePage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
+
+class ReplaceAllPage(Base):
+    def __init__(self, master):
+        super().__init__(master)      
+
+
+class AddToAllPage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
+
+class RemoveFromAllPage(Base):
+    def __init__(self, master):
+        super().__init__(master)
+
 
 if __name__ == "__main__":
     app = App()
