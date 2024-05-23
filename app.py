@@ -3,6 +3,7 @@ from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+import json
 
 import scripts as cf
 
@@ -119,7 +120,6 @@ class AccountSelect(tk.Frame):
         global account_id
         account_id = next((id for id, name in self.accounts if name == self.account_var.get()), None)
         if account_id:
-            messagebox.showinfo('Account Selected', f'{self.account_var.get()}')
             self.master.switch_frame(HomePage)
         else:
             messagebox.showerror('Selection Error', 'No Account Selected')
@@ -147,7 +147,7 @@ class ZonePage(Base):
         heading = tk.Label(self, text='Zone Manager', width=80, font=('Times', '20'))
         heading.pack(pady=10, padx=10)
 
-        add_btn = tk.Button(self, text='Quick Add', width=15)
+        add_btn = tk.Button(self, text='Quick Add', width=15, command=lambda: master.switch_frame(QuickAddZone))
         add_btn.pack(pady=5)
 
         add_btn = tk.Button(self, text='Add', width=15)
@@ -156,9 +156,20 @@ class ZonePage(Base):
         add_btn = tk.Button(self, text='Remove', width=15)
         add_btn.pack(pady=5)
 
+
 class QuickAddZone(Base):
     def __init__(self, master):
         super().__init__(master)
+
+        heading = tk.Label(self, text='Quick Add', width=80, font=('Times', '20'))
+        heading.pack(pady=10, padx=10)
+
+        with open('defaults.json', 'r') as file:
+            self.default_records = json.load(file)
+        
+        self.selected_server = tk.StringVar()
+        for option in self.default_records:
+            tk.Radiobutton(self, text=option, variable=self.selected_server, value=option).pack()
 
         tk.Label(self, text='Enter Domain Name: ').pack(pady=(20, 10))
         
@@ -171,13 +182,15 @@ class QuickAddZone(Base):
     def add_zone(self):
         zone_name = self.zone_name_entry.get().strip()
         if zone_name:
-            if cf.create_zone(zone_name):
+            selected_records = self.default_records[self.selected_server.get()]
+            if cf.create_zone(zone_name, account_id, selected_records):
                 messagebox.showinfo('Success', 'Zone Created Successfully')
                 self.master.switch_frame(HomePage)
             else:
                 messagebox.showerror('Error', 'Failed to Add Zone')
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
+
 
 class AddZone(Base):
     def __init__(self, master):

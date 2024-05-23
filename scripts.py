@@ -34,5 +34,5 @@ def get_cloudflare_accounts():
         print('Failed to retrieve accounts')
         return []
 
-def add_default_zone(server, account_id):
-    pass
+def create_zone(zone_name, account_id, server):
+    return True
