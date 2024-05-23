@@ -167,7 +167,7 @@ class QuickAddZone(Base):
         with open('defaults.json', 'r') as file:
             self.default_records = json.load(file)
         
-        self.selected_server = tk.StringVar()
+        self.selected_server = tk.StringVar(value='d725')
         for option in self.default_records:
             tk.Radiobutton(self, text=option, variable=self.selected_server, value=option).pack()
 
