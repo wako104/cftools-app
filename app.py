@@ -4,8 +4,10 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 import json
+import threading
 
 import scripts as cf
+import handlers as func
 
 class App(tk.Tk):
     def __init__(self):
@@ -17,6 +19,8 @@ class App(tk.Tk):
         self._frame = None
         self.frame_history = []
         self.switch_frame(ConnectionPage)
+
+        center_window(self)
 
     def switch_frame(self, frame_class):
         new_frame = frame_class(self)
@@ -114,7 +118,8 @@ class AccountSelect(tk.Frame):
             self.account_var.set(self.accounts[0][1])
         account_select.pack(pady=10, padx=10)
 
-        tk.Button(self, text='Go', command=self.select_account).pack(pady=5)
+        go_btn = tk.Button(self, text='Go', command=self.select_account)
+        go_btn.pack(pady=5)
 
     def select_account(self):
         global account_id
@@ -164,14 +169,16 @@ class QuickAddZone(Base):
         heading = tk.Label(self, text='Quick Add', width=80, font=('Times', '20'))
         heading.pack(pady=10, padx=10)
 
-        with open('defaults.json', 'r') as file:
+        with open('default_records.json', 'r') as file:
             self.default_records = json.load(file)
         
-        self.selected_server = tk.StringVar(value='d725')
+        default_server = 'd725' if 'd725' in self.default_records else (list(self.default_records.keys())[0] if self.default_records else '')
+        self.selected_server = tk.StringVar(value=default_server)
         for option in self.default_records:
             tk.Radiobutton(self, text=option, variable=self.selected_server, value=option).pack()
 
-        tk.Label(self, text='Enter Domain Name: ').pack(pady=(20, 10))
+        zone_entry_label = tk.Label(self, text='Enter Domain Name: ')
+        zone_entry_label.pack(pady=(20, 10))
         
         self.zone_name_entry = tk.Entry(self, font=('Times', 12), width=30)
         self.zone_name_entry.pack(pady=(0, 20))
@@ -182,12 +189,25 @@ class QuickAddZone(Base):
     def add_zone(self):
         zone_name = self.zone_name_entry.get().strip()
         if zone_name:
-            selected_records = self.default_records[self.selected_server.get()]
-            if cf.create_zone(zone_name, account_id, selected_records):
+            default_records = self.default_records[self.selected_server.get()]
+            for record in default_records:
+                record['name'] = record['name'].replace('@', zone_name)
+
+            loading_dialog = LoadingDialog(self)
+
+            try:
+                loading_dialog.update('Creating Zone...')
+                zone_id = handle_zone_creation(zone_name, account_id)
+                loading_dialog.update('Setting SSL...')
+                handle_set_ssl(zone_id)
+                loading_dialog.update('Adding DNS Records...')
+                handle_add_dns_records(zone_id, default_records)
+                loading_dialog.complete()
                 messagebox.showinfo('Success', 'Zone Created Successfully')
+            except Exception as e:
+                messagebox.showerror('Error', str(e))
+            finally:
                 self.master.switch_frame(HomePage)
-            else:
-                messagebox.showerror('Error', 'Failed to Add Zone')
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
 
@@ -251,6 +271,128 @@ class RemoveFromAllPage(Base):
     def __init__(self, master):
         super().__init__(master)
 
+
+class RecordErrorDialog(tk.Toplevel):
+    def __init__(self, parent, message):
+        super().__init__(parent)
+        self.title("Error")
+        self.geometry("300x150")
+        self.resizable(False, False)
+
+        center_window(self)
+        
+        tk.Label(self, text=message, wraplength=280).pack(pady=10)
+
+        button_frame = tk.Frame(self)
+        button_frame.pack(pady=10)
+
+        self.result = None
+
+        abort_button = tk.Button(button_frame, text="Abort", command=self.abort)
+        abort_button.pack(side="left", padx=5)
+
+        retry_button = tk.Button(button_frame, text="Retry", command=self.retry)
+        retry_button.pack(side="left", padx=5)
+
+        skip_button = tk.Button(button_frame, text="Skip this Record", command=self.skip)
+        skip_button.pack(side="left", padx=5)
+
+        self.protocol("WM_DELETE_WINDOW", self.abort)
+
+    def abort(self):
+        self.result = "abort"
+        self.destroy()
+
+    def retry(self):
+        self.result = "retry"
+        self.destroy()
+
+    def skip(self):
+        self.result = "skip"
+        self.destroy()
+
+    def show(self):
+        self.wait_window()
+        return self.result
+
+
+class LoadingDialog(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Working...")
+
+        center_window(self)
+
+        self.label = tk.Label(self, text='Starting...',)
+        self.label.pack(pady=10)
+
+        self.progress = ttk.Progressbar(self, length=300, mode='indeterminate')
+        self.progress.pack(pady=10)
+        self.progress.start()
+        
+        self.update_idletasks()
+
+    def update(self, message):
+        self.label.config(text=message)
+        self.update_idletasks()
+
+    def complete(self):
+        self.label.config(text='Completed')
+        self.update_idletasks()
+        self.after(1000, self.destroy)
+
+def center_window(window):
+    window.update_idletasks()
+
+    window_width = window.winfo_width()
+    window_height = window.winfo_height()
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+
+    x = (screen_width // 2) - (window_width // 2)
+    y = (screen_height // 2) - (window_height // 2)
+
+    window.geometry(f'{window_width}x{window_height}+{x}+{y}')
+
+def handle_zone_creation(zone_name, account_id):
+    response = cf.create_zone(zone_name, account_id)
+    if response.status_code != 200:
+        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
+        raise Exception(f'Failed to Add Zone: {error_message}')
+    zone_id = response.json()['result']['id']
+    return zone_id
+
+def handle_set_ssl(zone_id):
+    response = cf.set_ssl(zone_id, 'strict')
+    if response.status_code != 200:
+        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
+        raise Exception(f'Failed to Add Zone: {error_message}')
+
+def handle_add_dns_records(zone_id, records):
+    responses = {}
+    for record in records:
+        while True:     
+            response = cf.add_dns_record(zone_id, record)
+            action = handle_response(response)
+            if action == 'retry':
+                continue
+            elif action == 'skip':
+                break
+            elif action == 'abort':
+                return
+            elif action == True:
+                record_name = record['name']
+                responses[record_name] = response.json()
+                break
+
+def handle_response(response):
+    if response.status_code != 200:
+        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
+        result = response.json()['result']
+        error_dialog = RecordErrorDialog(None, f'Failed to add DNS Record {result['type']} | {result['name']} | {result['content']}: {error_message}')
+        action = error_dialog.show()
+        return action
+    return True
 
 if __name__ == '__main__':
     app = App()
