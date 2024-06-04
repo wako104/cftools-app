@@ -3,8 +3,8 @@ from tkinter import *
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+import pyperclip
 import json
-import threading
 
 import scripts as cf
 import handlers as func
@@ -12,7 +12,6 @@ import handlers as func
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
-
         self.title('OSAM Websites Cloudflare Tool')
         self.geometry('400x250')
         self.resizable(False, False)
@@ -197,17 +196,18 @@ class QuickAddZone(Base):
 
             try:
                 loading_dialog.update('Creating Zone...')
-                zone_id = handle_zone_creation(zone_name, account_id)
+                zone_id, name_servers = func.handle_zone_creation(zone_name, account_id)
                 loading_dialog.update('Setting SSL...')
-                handle_set_ssl(zone_id)
+                func.handle_set_ssl(zone_id)
                 loading_dialog.update('Adding DNS Records...')
-                handle_add_dns_records(zone_id, default_records)
+                records = func.handle_add_dns_records(zone_id, default_records)
+                print(records)
                 loading_dialog.complete()
                 messagebox.showinfo('Success', 'Zone Created Successfully')
             except Exception as e:
                 messagebox.showerror('Error', str(e))
             finally:
-                self.master.switch_frame(HomePage)
+                ZoneCompleteDialog(self, records, zone_name, name_servers)
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
 
@@ -275,11 +275,9 @@ class RemoveFromAllPage(Base):
 class RecordErrorDialog(tk.Toplevel):
     def __init__(self, parent, message):
         super().__init__(parent)
-        self.title("Error")
-        self.geometry("300x150")
+        self.title('Error')
+        self.geometry('300x150')
         self.resizable(False, False)
-
-        center_window(self)
         
         tk.Label(self, text=message, wraplength=280).pack(pady=10)
 
@@ -288,27 +286,27 @@ class RecordErrorDialog(tk.Toplevel):
 
         self.result = None
 
-        abort_button = tk.Button(button_frame, text="Abort", command=self.abort)
-        abort_button.pack(side="left", padx=5)
+        abort_button = tk.Button(button_frame, text='Abort', command=self.abort)
+        abort_button.pack(side='left', padx=5)
 
-        retry_button = tk.Button(button_frame, text="Retry", command=self.retry)
-        retry_button.pack(side="left", padx=5)
+        retry_button = tk.Button(button_frame, text='Retry', command=self.retry)
+        retry_button.pack(side='left', padx=5)
 
-        skip_button = tk.Button(button_frame, text="Skip this Record", command=self.skip)
-        skip_button.pack(side="left", padx=5)
+        skip_button = tk.Button(button_frame, text='Skip this Record', command=self.skip)
+        skip_button.pack(side='left', padx=5)
 
-        self.protocol("WM_DELETE_WINDOW", self.abort)
+        self.protocol('WM_DELETE_WINDOW', self.abort)
 
     def abort(self):
-        self.result = "abort"
+        self.result = 'abort'
         self.destroy()
 
     def retry(self):
-        self.result = "retry"
+        self.result = 'retry'
         self.destroy()
 
     def skip(self):
-        self.result = "skip"
+        self.result = 'skip'
         self.destroy()
 
     def show(self):
@@ -319,17 +317,12 @@ class RecordErrorDialog(tk.Toplevel):
 class LoadingDialog(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
-        self.title("Working...")
+        self.geometry('300x100')
+        self.title('Working...')
 
-        center_window(self)
-
-        self.label = tk.Label(self, text='Starting...',)
+        self.label = tk.Label(self, text='Starting...')
         self.label.pack(pady=10)
 
-        self.progress = ttk.Progressbar(self, length=300, mode='indeterminate')
-        self.progress.pack(pady=10)
-        self.progress.start()
-        
         self.update_idletasks()
 
     def update(self, message):
@@ -340,6 +333,40 @@ class LoadingDialog(tk.Toplevel):
         self.label.config(text='Completed')
         self.update_idletasks()
         self.after(1000, self.destroy)
+
+
+class ZoneCompleteDialog(tk.Toplevel):
+    def __init__(self, parent, records, zone_name, name_servers):
+        super().__init__(parent)
+
+        heading = tk.Label(self, text='Domain Added to Cloudflare', font=('Times', '20'))
+        heading.pack(pady=10,padx=10)
+
+        zone_label = tk.Label(self, text=zone_name, style="Bold.TLabel")
+        zone_label.pack()
+
+        frame = ttk.Frame(self)
+        frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
+
+        columns=('Type', 'Name', 'Content', 'Proxy Status', 'TTL')
+        table = ttk.Treeview(frame, columns=columns, show='headings')
+        
+        for col in columns:
+            table.heading(col, text=col)
+            table.column(col, width=150)
+
+        for record in records:
+            result = record.get('result', {})
+            type = result.get('type', 'N/A')
+            name = result.get('name', 'N/A')
+            content = result.get('content', 'N/A')
+            proxied = result.get('proxied', 'N/A')
+            ttl = result.get('ttl', 'N/A')
+            table.insert('', tk.END, values=(type, name, content, proxied, ttl))
+
+        table.pack(fill=tk.BOTH, expand=True)
+
+
 
 def center_window(window):
     window.update_idletasks()
@@ -353,46 +380,6 @@ def center_window(window):
     y = (screen_height // 2) - (window_height // 2)
 
     window.geometry(f'{window_width}x{window_height}+{x}+{y}')
-
-def handle_zone_creation(zone_name, account_id):
-    response = cf.create_zone(zone_name, account_id)
-    if response.status_code != 200:
-        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
-        raise Exception(f'Failed to Add Zone: {error_message}')
-    zone_id = response.json()['result']['id']
-    return zone_id
-
-def handle_set_ssl(zone_id):
-    response = cf.set_ssl(zone_id, 'strict')
-    if response.status_code != 200:
-        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
-        raise Exception(f'Failed to Add Zone: {error_message}')
-
-def handle_add_dns_records(zone_id, records):
-    responses = {}
-    for record in records:
-        while True:     
-            response = cf.add_dns_record(zone_id, record)
-            action = handle_response(response)
-            if action == 'retry':
-                continue
-            elif action == 'skip':
-                break
-            elif action == 'abort':
-                return
-            elif action == True:
-                record_name = record['name']
-                responses[record_name] = response.json()
-                break
-
-def handle_response(response):
-    if response.status_code != 200:
-        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
-        result = response.json()['result']
-        error_dialog = RecordErrorDialog(None, f'Failed to add DNS Record {result['type']} | {result['name']} | {result['content']}: {error_message}')
-        action = error_dialog.show()
-        return action
-    return True
 
 if __name__ == '__main__':
     app = App()
