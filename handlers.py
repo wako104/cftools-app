@@ -1,5 +1,5 @@
 import scripts as cf
-from app import RecordErrorDialog
+from app_old import RecordErrorDialog
 
 def handle_zone_creation(zone_name, account_id):
     response = cf.create_zone(zone_name, account_id)

@@ -1,65 +1,91 @@
 import os
-from tkinter import *
 import tkinter as tk
-from tkinter import messagebox
 from tkinter import ttk
-import pyperclip
+from tkinter import messagebox
 import json
 
-import scripts as cf
 import handlers as func
+import scripts as cf
 
 class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('OSAM Websites Cloudflare Tool')
-        self.geometry('400x250')
-        self.resizable(False, False)
-        self._frame = None
-        self.frame_history = []
-        self.switch_frame(ConnectionPage)
+        self.geometry('800x600')
 
-        center_window(self)
+        #--------------- SIDEBAR ---------------
+        self.sidebar = ttk.Frame(self)
+        self.sidebar.pack(side='left', fill='y')
+        # dashboard
+        self.dashboard_btn = ttk.Button(self.sidebar, text='Dashboard', command=lambda: self.switch_frame(Dashboard, 'Dashboard'), state='disabled')
+        self.dashboard_btn.pack(padx=10, pady=10)
+        # separator
+        self.separator = ttk.Separator(self.sidebar)
+        self.separator.pack(fill='x', padx=10, pady=5)
+        # zones
+        self.zones_label = ttk.Label(self.sidebar, text='Zones')
+        self.zones_label.pack(padx=10, pady=5)
+        self.quick_add_zone_btn = ttk.Button(self.sidebar, text='Quick Add Zone', command=lambda: self.switch_frame(QuickAddZonePage, 'Quick Add Zone'), state='disabled')
+        self.quick_add_zone_btn.pack(padx=10, pady=5)
+        self.add_zone_btn = ttk.Button(self.sidebar, text='Add Zone', command=lambda: self.switch_frame(AddZonePage, 'Add Zone'), state='disabled')
+        self.add_zone_btn.pack(padx=10, pady=5)
+        self.rmv_zone_btn = ttk.Button(self.sidebar, text='Remove Zone', command=lambda: self.switch_frame(RemoveZonePage, 'Remove Zone'),state='disabled')
+        self.rmv_zone_btn.pack(padx=10, pady=5)
+        # separator
+        self.separator = ttk.Separator(self.sidebar)
+        self.separator.pack(fill='x', padx=10, pady=5)
+        # records
+        self.records_label = ttk.Label(self.sidebar, text='DNS Records')
+        self.records_label.pack(padx=10, pady=5)
+        self.s_and_r_btn = ttk.Button(self.sidebar, text='Search and Replace', state='disabled')
+        self.s_and_r_btn.pack(padx=10, pady=5)
 
-    def switch_frame(self, frame_class):
-        new_frame = frame_class(self)
-        if self._frame is not None:
-            self.frame_history.append(self._frame.__class__)
-            self._frame.destroy()
-        self._frame = new_frame
-        self._frame.pack()
+        #------------- RIGHT SIDE -------------
+        self.right_side = ttk.Frame(self)
 
-    def previous_frame(self):
-        if self.frame_history:
-            frame = self.frame_history.pop()
-            self.switch_frame(frame)
-        else:
-            messagebox.showinfo('Info', 'No previous page available')
+        self.right_side.pack(side='left', fill='both', expand=True)
 
+        #--------------- HEADER ----------------
+        self.header = ttk.Frame(self.right_side)
+        self.header_label = ttk.Label(self.header, anchor='center', font=('helvetica', '20'))
 
-class Base(tk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-        master.geometry('720x400')
-        master.resizable(False, False)
-        self.add_home_button(master)
-        self.add_back_button(master)
+        self.header.pack(fill='both')
+        self.header_label.pack(fill='both', padx=10, pady=10)
 
-    def add_home_button(self, master):
-        button = tk.Button(self, text='Home Page', command=lambda: master.switch_frame(HomePage))
-        button.pack(anchor='w', padx=10, pady=10)
+        ttk.Separator(self.header, orient='horizontal').pack(side='bottom', fill='x')
 
-    def add_back_button(self, master):
-        button = tk.Button(self, text='Back', command=lambda: master.previous_frame())
-        button.pack(anchor='w', padx=10, pady=5)
+        #---------------- MAIN -----------------
+        self.main_frame = ttk.Frame(self.right_side)
+
+        self.main_frame.pack(expand=True)
+
+        self.current_frame = None
+        self.switch_frame(ConnectionPage, 'Connect to Cloudflare Account')
+
+    def switch_frame(self, frame_class, header_text):
+        if self.current_frame is not None:
+            self.current_frame.pack_forget()
+            self.current_frame.destroy()
+
+        new_frame = frame_class(self.main_frame, self)
+        new_frame.pack(fill='both', expand=True)
+        self.current_frame = new_frame
+
+        self.header_label.config(text=header_text)
+    
+    def enable_sidebar(self):
+        self.dashboard_btn.config(state='normal')
+        self.quick_add_zone_btn.config(state='normal')
+        self.add_zone_btn.config(state='normal')
+        self.rmv_zone_btn.config(state='normal')
+        self.s_and_r_btn.config(state='normal')
+
 
 
 class ConnectionPage(tk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-
-        heading = tk.Label(self, text='Connect to Cloudflare Account', font=('Times', '20'))
-        heading.pack(pady=10,padx=10)
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
         env_conn_btn = tk.Button(self, text='Connect Using Environment Variables', command=self.conn_with_env)
         env_conn_btn.pack(pady=5)
@@ -84,7 +110,7 @@ class ConnectionPage(tk.Frame):
 
         if cf.validate_key(api_key=api_key, email=email):
             messagebox.showinfo('Success', 'Connection Established')
-            self.master.switch_frame(AccountSelect)
+            self.controller.switch_frame(AccountSelect, 'Select Account')
         else:
             messagebox.showerror('Error', 'Connection Failed')
 
@@ -94,7 +120,7 @@ class ConnectionPage(tk.Frame):
             email = os.environ['CLOUDFLARE_EMAIL']
             if cf.validate_key(api_key=api_key, email=email):
                 messagebox.showinfo('Success', 'Connection Established')
-                self.master.switch_frame(AccountSelect)
+                self.controller.switch_frame(AccountSelect, 'Select Account')
             else:
                 messagebox.showerror('Error', 'Connection Failed')
         except:
@@ -102,11 +128,9 @@ class ConnectionPage(tk.Frame):
 
 
 class AccountSelect(tk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-
-        heading = tk.Label(self, text='Select Account', font=('Times', '20'))
-        heading.pack(pady=10,padx=10)
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
         self.accounts = cf.get_cloudflare_accounts()
         self.account_var = tk.StringVar()
@@ -124,49 +148,27 @@ class AccountSelect(tk.Frame):
         global account_id
         account_id = next((id for id, name in self.accounts if name == self.account_var.get()), None)
         if account_id:
-            self.master.switch_frame(HomePage)
+            self.controller.enable_sidebar()
+            self.controller.switch_frame(Dashboard, 'Dashboard')
         else:
             messagebox.showerror('Selection Error', 'No Account Selected')
 
 
-class HomePage(tk.Frame):
-    def __init__(self, master):
-        super().__init__(master)
-        master.geometry('400x250')
+class Dashboard(tk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
 
-        heading = tk.Label(self, text='Cloudflare Manager', font=('Times', '20'))
-        heading.pack(pady=10,padx=10)
-
-        zone_btn = tk.Button(self, text='Zones', width=10, height=3, command=lambda: master.switch_frame(ZonePage))
-        zone_btn.pack(pady=5)
-
-        records_btn = tk.Button(self, text='DNS Records', width=10, height=3, command=lambda: master.switch_frame(RecordsPage))
-        records_btn.pack(pady=5)
+        welcome_label = ttk.Label(self, text='Welcome', foreground='grey')
+        welcome_label.pack()
+        account_id_label = ttk.Label(self, text='Account ID: ' + account_id, foreground='grey')
+        account_id_label.pack()
 
 
-class ZonePage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-    
-        heading = tk.Label(self, text='Zone Manager', width=80, font=('Times', '20'))
-        heading.pack(pady=10, padx=10)
 
-        add_btn = tk.Button(self, text='Quick Add', width=15, command=lambda: master.switch_frame(QuickAddZone))
-        add_btn.pack(pady=5)
-
-        add_btn = tk.Button(self, text='Add', width=15)
-        add_btn.pack(pady=5)
-
-        add_btn = tk.Button(self, text='Remove', width=15)
-        add_btn.pack(pady=5)
-
-
-class QuickAddZone(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-        heading = tk.Label(self, text='Quick Add', width=80, font=('Times', '20'))
-        heading.pack(pady=10, padx=10)
+class QuickAddZonePage(tk.Frame):
+    def __init__(self, parent):
+        super().__init__(parent)
 
         with open('default_records.json', 'r') as file:
             self.default_records = json.load(file)
@@ -182,204 +184,44 @@ class QuickAddZone(Base):
         self.zone_name_entry = tk.Entry(self, font=('Times', 12), width=30)
         self.zone_name_entry.pack(pady=(0, 20))
 
-        add_zone_btn = tk.Button(self, text='Create Domain with Default DNS Records', command=self.add_zone)
+        add_zone_btn = tk.Button(self, text='Create Domain with Default DNS Records')
         add_zone_btn.pack()
 
-    def add_zone(self):
-        zone_name = self.zone_name_entry.get().strip()
-        if zone_name:
-            default_records = self.default_records[self.selected_server.get()]
-            for record in default_records:
-                record['name'] = record['name'].replace('@', zone_name)
+    # def add_zone(self):
+    #     zone_name = self.zone_name_entry.get().strip()
+    #     if zone_name:
+    #         default_records = self.default_records[self.selected_server.get()]
+    #         for record in default_records:
+    #             record['name'] = record['name'].replace('@', zone_name)
 
-            loading_dialog = LoadingDialog(self)
+    #         loading_dialog = LoadingDialog(self)
 
-            try:
-                loading_dialog.update('Creating Zone...')
-                zone_id, name_servers = func.handle_zone_creation(zone_name, account_id)
-                loading_dialog.update('Setting SSL...')
-                func.handle_set_ssl(zone_id)
-                loading_dialog.update('Adding DNS Records...')
-                records = func.handle_add_dns_records(zone_id, default_records)
-                print(records)
-                loading_dialog.complete()
-                messagebox.showinfo('Success', 'Zone Created Successfully')
-            except Exception as e:
-                messagebox.showerror('Error', str(e))
-            finally:
-                ZoneCompleteDialog(self, records, zone_name, name_servers)
-        else:
-            messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
+    #         try:
+    #             loading_dialog.update('Creating Zone...')
+    #             zone_id, name_servers = func.handle_zone_creation(zone_name, account_id)
+    #             loading_dialog.update('Setting SSL...')
+    #             func.handle_set_ssl(zone_id)
+    #             loading_dialog.update('Adding DNS Records...')
+    #             records = func.handle_add_dns_records(zone_id, default_records)
+    #             print(records)
+    #             loading_dialog.complete()
+    #             messagebox.showinfo('Success', 'Zone Created Successfully')
+    #         except Exception as e:
+    #             messagebox.showerror('Error', str(e))
+    #         finally:
+    #             ZoneCompleteDialog(self, records, zone_name, name_servers)
+    #     else:
+    #         messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
 
-
-class AddZone(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class RemoveZone(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class RecordsPage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-        heading = tk.Label(self, text='DNS Records Manager', width=80, font=('Times', '20'))
-        heading.pack(pady=10,padx=10)
-
-        tk.Button(self, text='Search and Replace', width=15, command=lambda: master.switch_frame(SearchAndReplacePage)).pack(pady=5)
-
-        tk.Button(self, text='Search and Add', width=15, command=lambda: master.switch_frame(SearchAndAddPage)).pack(pady=5)
-
-        tk.Button(self, text='Search and Remove', width=15, command=lambda: master.switch_frame(SearchAndRemovePage)).pack(pady=5)
-
-        tk.Button(self, text='Replace All', width=15, command=lambda: master.switch_frame(ReplaceAllPage)).pack(pady=5)
-
-        tk.Button(self, text='Add to All', width=15, command=lambda: master.switch_frame(AddToAllPage)).pack(pady=5)
-
-        tk.Button(self, text='Remove from All', width=15, command=lambda: master.switch_frame(RemoveFromAllPage)).pack(pady=5)
-
-
-class SearchAndReplacePage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class SearchAndAddPage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class SearchAndRemovePage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class ReplaceAllPage(Base):
-    def __init__(self, master):
-        super().__init__(master)      
-
-
-class AddToAllPage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class RemoveFromAllPage(Base):
-    def __init__(self, master):
-        super().__init__(master)
-
-
-class RecordErrorDialog(tk.Toplevel):
-    def __init__(self, parent, message):
-        super().__init__(parent)
-        self.title('Error')
-        self.geometry('300x150')
-        self.resizable(False, False)
-        
-        tk.Label(self, text=message, wraplength=280).pack(pady=10)
-
-        button_frame = tk.Frame(self)
-        button_frame.pack(pady=10)
-
-        self.result = None
-
-        abort_button = tk.Button(button_frame, text='Abort', command=self.abort)
-        abort_button.pack(side='left', padx=5)
-
-        retry_button = tk.Button(button_frame, text='Retry', command=self.retry)
-        retry_button.pack(side='left', padx=5)
-
-        skip_button = tk.Button(button_frame, text='Skip this Record', command=self.skip)
-        skip_button.pack(side='left', padx=5)
-
-        self.protocol('WM_DELETE_WINDOW', self.abort)
-
-    def abort(self):
-        self.result = 'abort'
-        self.destroy()
-
-    def retry(self):
-        self.result = 'retry'
-        self.destroy()
-
-    def skip(self):
-        self.result = 'skip'
-        self.destroy()
-
-    def show(self):
-        self.wait_window()
-        return self.result
-
-
-class LoadingDialog(tk.Toplevel):
+class AddZonePage(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
-        self.geometry('300x100')
-        self.title('Working...')
-
-        self.label = tk.Label(self, text='Starting...')
-        self.label.pack(pady=10)
-
-        self.update_idletasks()
-
-    def update(self, message):
-        self.label.config(text=message)
-        self.update_idletasks()
-
-    def complete(self):
-        self.label.config(text='Completed')
-        self.update_idletasks()
-        self.after(1000, self.destroy)
 
 
-class ZoneCompleteDialog(tk.Toplevel):
-    def __init__(self, parent, records, zone_name, name_servers):
+class RemoveZonePage(tk.Frame):
+    def __init__(self, parent):
         super().__init__(parent)
 
-        heading = tk.Label(self, text='Domain Added to Cloudflare', font=('Times', '20'))
-        heading.pack(pady=10,padx=10)
-
-        zone_label = tk.Label(self, text=zone_name, style="Bold.TLabel")
-        zone_label.pack()
-
-        frame = ttk.Frame(self)
-        frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-
-        columns=('Type', 'Name', 'Content', 'Proxy Status', 'TTL')
-        table = ttk.Treeview(frame, columns=columns, show='headings')
-        
-        for col in columns:
-            table.heading(col, text=col)
-            table.column(col, width=150)
-
-        for record in records:
-            result = record.get('result', {})
-            type = result.get('type', 'N/A')
-            name = result.get('name', 'N/A')
-            content = result.get('content', 'N/A')
-            proxied = result.get('proxied', 'N/A')
-            ttl = result.get('ttl', 'N/A')
-            table.insert('', tk.END, values=(type, name, content, proxied, ttl))
-
-        table.pack(fill=tk.BOTH, expand=True)
-
-
-
-def center_window(window):
-    window.update_idletasks()
-
-    window_width = window.winfo_width()
-    window_height = window.winfo_height()
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-
-    x = (screen_width // 2) - (window_width // 2)
-    y = (screen_height // 2) - (window_height // 2)
-
-    window.geometry(f'{window_width}x{window_height}+{x}+{y}')
 
 if __name__ == '__main__':
     app = App()
