@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import json
 
-import handlers as func
+import handlers as func 
 import scripts as cf
 
 class App(tk.Tk):
@@ -14,22 +14,22 @@ class App(tk.Tk):
         self.geometry('800x600')
 
         #--------------- SIDEBAR ---------------
-        self.sidebar = ttk.Frame(self)
+        self.sidebar = tk.Frame(self)
         self.sidebar.pack(side='left', fill='y')
         # dashboard
-        self.dashboard_btn = ttk.Button(self.sidebar, text='Dashboard', command=lambda: self.switch_frame(Dashboard, 'Dashboard'), state='disabled')
-        self.dashboard_btn.pack(padx=10, pady=10)
+        self.dashboard_btn = ttk.Button(self.sidebar, text='Dashboard', command=lambda: self.switch_frame(Dashboard, 'Dashboard'))
+        self.dashboard_btn.pack(padx=10, pady=13)
         # separator
         self.separator = ttk.Separator(self.sidebar)
         self.separator.pack(fill='x', padx=10, pady=5)
         # zones
         self.zones_label = ttk.Label(self.sidebar, text='Zones')
         self.zones_label.pack(padx=10, pady=5)
-        self.quick_add_zone_btn = ttk.Button(self.sidebar, text='Quick Add Zone', command=lambda: self.switch_frame(QuickAddZonePage, 'Quick Add Zone'), state='disabled')
+        self.quick_add_zone_btn = ttk.Button(self.sidebar, text='Quick Add Zone', command=lambda: self.switch_frame(QuickAddZonePage, 'Quick Add Zone'))
         self.quick_add_zone_btn.pack(padx=10, pady=5)
-        self.add_zone_btn = ttk.Button(self.sidebar, text='Add Zone', command=lambda: self.switch_frame(AddZonePage, 'Add Zone'), state='disabled')
+        self.add_zone_btn = ttk.Button(self.sidebar, text='Add Zone', command=lambda: self.switch_frame(AddZonePage, 'Add Zone'))
         self.add_zone_btn.pack(padx=10, pady=5)
-        self.rmv_zone_btn = ttk.Button(self.sidebar, text='Remove Zone', command=lambda: self.switch_frame(RemoveZonePage, 'Remove Zone'),state='disabled')
+        self.rmv_zone_btn = ttk.Button(self.sidebar, text='Remove Zone', command=lambda: self.switch_frame(RemoveZonePage, 'Remove Zone'))
         self.rmv_zone_btn.pack(padx=10, pady=5)
         # separator
         self.separator = ttk.Separator(self.sidebar)
@@ -37,27 +37,27 @@ class App(tk.Tk):
         # records
         self.records_label = ttk.Label(self.sidebar, text='DNS Records')
         self.records_label.pack(padx=10, pady=5)
-        self.s_and_r_btn = ttk.Button(self.sidebar, text='Search and Replace', state='disabled')
+        self.s_and_r_btn = ttk.Button(self.sidebar, text='Search and Replace')
         self.s_and_r_btn.pack(padx=10, pady=5)
 
         #------------- RIGHT SIDE -------------
-        self.right_side = ttk.Frame(self)
+        self.right_side = tk.Frame(self)
 
         self.right_side.pack(side='left', fill='both', expand=True)
 
         #--------------- HEADER ----------------
-        self.header = ttk.Frame(self.right_side)
+        self.header = tk.Frame(self.right_side)
         self.header_label = ttk.Label(self.header, anchor='center', font=('helvetica', '20'))
 
         self.header.pack(fill='both')
         self.header_label.pack(fill='both', padx=10, pady=10)
 
-        ttk.Separator(self.header, orient='horizontal').pack(side='bottom', fill='x')
-
         #---------------- MAIN -----------------
-        self.main_frame = ttk.Frame(self.right_side)
+        self.main_placeholder = tk.Frame(self.right_side, highlightthickness=1, highlightbackground='black', bd=0)
+        self.main_frame = tk.Frame(self.main_placeholder)
 
-        self.main_frame.pack(expand=True)
+        self.main_placeholder.pack(expand=True, fill='both', padx=(0,5), pady=(0,5))
+        self.main_frame.pack(expand=True, pady=(0,50))
 
         self.current_frame = None
         self.switch_frame(ConnectionPage, 'Connect to Cloudflare Account')
@@ -87,21 +87,21 @@ class ConnectionPage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        env_conn_btn = tk.Button(self, text='Connect Using Environment Variables', command=self.conn_with_env)
+        env_conn_btn = ttk.Button(self, text='Connect Using Environment Variables', command=self.conn_with_env)
         env_conn_btn.pack(pady=5)
 
         separator = ttk.Separator(self, orient='horizontal')
-        separator.pack(fill='x', padx=15, pady=10)
+        separator.pack(fill='x', padx=15, pady=30)
 
-        tk.Label(self, text='API Key:').pack()
-        self.api_key = tk.Entry(self)
-        self.api_key.pack()
+        ttk.Label(self, text='API Key:').pack()
+        self.api_key = ttk.Entry(self)
+        self.api_key.pack(pady=5)
 
-        tk.Label(self, text='Email:').pack()
-        self.email = tk.Entry(self)
-        self.email.pack()
+        ttk.Label(self, text='Email:').pack()
+        self.email = ttk.Entry(self)
+        self.email.pack(pady=5)
 
-        conn_btn = tk.Button(self, text='Connect', command=self.conn)
+        conn_btn = ttk.Button(self, text='Connect', command=self.conn)
         conn_btn.pack(pady=5)
 
     def conn(self):
