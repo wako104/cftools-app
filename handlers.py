@@ -1,5 +1,8 @@
 import scripts as cf
-from app_old import RecordErrorDialog
+from app import RecordErrorDialog
+
+def handle_connection(api_key, email):
+    return cf.validate_key(api_key, email)
 
 def handle_zone_creation(zone_name, account_id):
     response = cf.create_zone(zone_name, account_id)
