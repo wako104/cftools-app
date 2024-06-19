@@ -33,7 +33,6 @@ def handle_add_dns_records(zone_id, records):
                 return
             elif action == True:
                 responses.append(response.json())
-                break
     return responses
 
 def handle_response(response):

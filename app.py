@@ -18,10 +18,10 @@ class App(tk.Tk):
         self.sidebar = tk.Frame(self)
         self.sidebar.pack(side='left', fill='y')
         # dashboard
-        self.logo_image = tk.PhotoImage(file='images/osam-logo-orange.png')
+        self.logo_image = tk.PhotoImage(file='C:/Users/Will Wakeford/git/cftools-app/images/osam-logo-orange.png')
         self.logo = self.logo_image.subsample(5,5)
 
-        self.icon = tk.PhotoImage(file='images/osam-logo.png')
+        self.icon = tk.PhotoImage(file='C:/Users/Will Wakeford/git/cftools-app/images/osam-logo.png')
         self.wm_iconphoto(True, self.icon)
 
         self.dashboard_btn = ttk.Button(self.sidebar, image=self.logo, command=lambda: self.switch_frame(Dashboard, 'Dashboard'), state='disabled')
@@ -175,8 +175,9 @@ class QuickAddZonePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
+        self.records = []
 
-        with open('default_records.json', 'r') as file:
+        with open('C:/Users/Will Wakeford/git/cftools-app/default_records.json', 'r') as file:
             self.default_records = json.load(file)
 
         server_label = ttk.Label(self, text='Choose Server:')
@@ -197,28 +198,27 @@ class QuickAddZonePage(tk.Frame):
         add_zone_btn.pack(pady=10)
 
     def add_zone(self):
-        zone_name = self.zone_name_entry.get().strip()
-        if zone_name:
-            default_records = self.default_records[self.selected_server.get()]
-            for record in default_records:
-                record['name'] = record['name'].replace('@', zone_name)
+        self.zone_name = self.zone_name_entry.get().strip()
+        if self.zone_name:
+            self.selected_records = self.default_records[self.selected_server.get()]
+            for record in self.selected_records:
+                record['name'] = record['name'].replace('@', self.zone_name)
 
             loading_dialog = LoadingDialog(self)
-
             try:
                 loading_dialog.update('Creating Zone...')
-                zone_id, name_servers = func.handle_zone_creation(zone_name, account_id)
+                self.zone_id, self.name_servers = func.handle_zone_creation(self.zone_name, account_id)
                 loading_dialog.update('Setting SSL...')
-                func.handle_set_ssl(zone_id)
+                func.handle_set_ssl(self.zone_id)
                 loading_dialog.update('Adding DNS Records...')
-                records = func.handle_add_dns_records(zone_id, default_records)
+                self.records = func.handle_add_dns_records(self.zone_id, self.selected_records)
                 loading_dialog.complete()
-                messagebox.showinfo('Success', 'Zone Created Successfully')
             except Exception as e:
                 messagebox.showerror('Error', str(e))
                 loading_dialog.destroy()
-            finally:
-                self.controller.switch_frame(ZoneCompletePage, 'Zone Complete', records=records, zone_name=zone_name, zone_id=zone_id, name_servers=name_servers)
+            # finally:
+            #     self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
+            self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
 
@@ -248,7 +248,7 @@ class ZoneCompletePage(tk.Frame):
             ns_frame.pack(pady=5)
             ns_label = ttk.Label(ns_frame, text=f'Nameserver {i+1}: {name_server}')
             ns_label.pack(side='left')
-            ns_copy_btn = ttk.Button(ns_frame, text='📋', command=lambda ns=name_server: self.copy_to_clipboard(ns))
+            ns_copy_btn = ttk.Button(ns_frame, text='📋', width=5, command=lambda ns=name_server: self.copy_to_clipboard(ns))
             ns_copy_btn.pack(side='right')
 
         records_label = ttk.Label(self, text='Records Added:')
