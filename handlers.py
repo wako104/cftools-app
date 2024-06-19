@@ -21,25 +21,15 @@ def handle_set_ssl(zone_id):
 
 def handle_add_dns_records(zone_id, records):
     responses = []
-    for record in records:
-        while True:     
-            response = cf.add_dns_record(zone_id, record)
-            action = handle_response(response)
-            if action == 'retry':
-                continue
-            elif action == 'skip':
-                break
-            elif action == 'abort':
-                return
-            elif action == True:
-                responses.append(response.json())
+    for record in records:  
+        print(f'attempting to add record {record}')
+        response = cf.add_dns_record(zone_id, record)
+        print(response.json())
+        if handle_response(response):
+            responses.append(response.json())
     return responses
 
 def handle_response(response):
     if response.status_code != 200:
-        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
-        result = response.json()['result']
-        error_dialog = RecordErrorDialog(None, f'Failed to add DNS Record {result['type']} | {result['name']} | {result['content']}: {error_message}')
-        action = error_dialog.show()
-        return action
+        return False
     return True

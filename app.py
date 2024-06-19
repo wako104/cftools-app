@@ -216,8 +216,6 @@ class QuickAddZonePage(tk.Frame):
             except Exception as e:
                 messagebox.showerror('Error', str(e))
                 loading_dialog.destroy()
-            # finally:
-            #     self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
             self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
