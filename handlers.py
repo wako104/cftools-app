@@ -18,6 +18,12 @@ def handle_set_ssl(zone_id):
     if response.status_code != 200:
         error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
         raise Exception(f'Failed to Add Zone: {error_message}')
+    
+def handle_always_use_https(zone_id):
+    response = cf.enable_always_use_https(zone_id)
+    if response.status_code != 200:
+        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
+        raise Exception(f'Failed to Add Zone: {error_message}')
 
 def handle_add_dns_records(zone_id, records):
     responses = []

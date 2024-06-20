@@ -56,3 +56,11 @@ def add_dns_record(zone_id, record):
     url = f'{BASE_URL}/zones/{zone_id}/dns_records'
     response = rate_limited_request(url=url, method='post', json=record, headers=headers)
     return response
+
+def enable_always_use_https(zone_id):
+    payload = {
+        'value': 'on'
+    }
+    url = f'{BASE_URL}/zones/{zone_id}/settings/always_use_https'
+    response = rate_limited_request(url=url, method='patch', json=payload, headers=headers)
+    return response

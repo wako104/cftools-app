@@ -3,10 +3,14 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 import json
-import webbrowser
 
 import handlers as func 
 import scripts as cf
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
+logo_path = os.path.join(script_dir, 'images', 'osam-logo-orange.png')
+icon_path = os.path.join(script_dir, 'images', 'osam-logo.png')
+default_records_path = os.path.join(script_dir, 'config', 'default_records.json')
 
 class App(tk.Tk):
     def __init__(self):
@@ -18,10 +22,10 @@ class App(tk.Tk):
         self.sidebar = tk.Frame(self)
         self.sidebar.pack(side='left', fill='y')
         # dashboard
-        self.logo_image = tk.PhotoImage(file='C:/Users/Will Wakeford/git/cftools-app/images/osam-logo-orange.png')
+        self.logo_image = tk.PhotoImage(file=logo_path)
         self.logo = self.logo_image.subsample(5,5)
 
-        self.icon = tk.PhotoImage(file='C:/Users/Will Wakeford/git/cftools-app/images/osam-logo.png')
+        self.icon = tk.PhotoImage(file=icon_path)
         self.wm_iconphoto(True, self.icon)
 
         self.dashboard_btn = ttk.Button(self.sidebar, image=self.logo, command=lambda: self.switch_frame(Dashboard, 'Dashboard'), state='disabled')
@@ -177,7 +181,7 @@ class QuickAddZonePage(tk.Frame):
         self.controller = controller
         self.records = []
 
-        with open('C:/Users/Will Wakeford/git/cftools-app/default_records.json', 'r') as file:
+        with open(default_records_path, 'r') as file:
             self.default_records = json.load(file)
 
         server_label = ttk.Label(self, text='Choose Server:')
@@ -210,6 +214,8 @@ class QuickAddZonePage(tk.Frame):
                 self.zone_id, self.name_servers = func.handle_zone_creation(self.zone_name, account_id)
                 loading_dialog.update('Setting SSL...')
                 func.handle_set_ssl(self.zone_id)
+                loading_dialog.update('Enabling Always Use HTTPS...')
+                func.handle_always_use_https(self.zone_id)
                 loading_dialog.update('Adding DNS Records...')
                 self.records = func.handle_add_dns_records(self.zone_id, self.selected_records)
                 loading_dialog.complete()
@@ -249,7 +255,7 @@ class ZoneCompletePage(tk.Frame):
             ns_copy_btn = ttk.Button(ns_frame, text='📋', width=5, command=lambda ns=name_server: self.copy_to_clipboard(ns))
             ns_copy_btn.pack(side='right')
 
-        records_label = ttk.Label(self, text='Records Added:')
+        records_label = ttk.Label(self, text=f'{len(self.records)} Records Added:')
         records_label.pack(pady=10)
 
         table_frame = ttk.Frame(self)
@@ -273,10 +279,6 @@ class ZoneCompletePage(tk.Frame):
 
         table.pack(fill=tk.BOTH, expand=True)
 
-        # doesnt currently work
-        # open_in_cf_btn = ttk.Button(self, text='Open in Cloudflare', command=lambda: webbrowser.open_new(self.link))
-        # open_in_cf_btn.pack(pady=10)
-    
     def copy_to_clipboard(self, text):
         self.controller.clipboard_clear()
         self.controller.clipboard_append(text)
@@ -287,6 +289,21 @@ class RemoveZonePage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
+        zone_entry_label = ttk.Label(self, text='Enter Domain Name: ')
+        zone_entry_label.pack(pady=(20,10))
+
+        self.zone_name_entry = ttk.Entry(self, font=('Times', 12), width=30)
+        self.zone_name_entry.pack(pady=10)
+
+        add_zone_btn = ttk.Button(self, text='Remove Zone from Cloudflare', command=self.remove_zone)
+        add_zone_btn.pack(pady=10)
+
+    # def remove_zone(self):
+    #     self.zone_name = self.zone_name_entry.get().strip()
+    #     if self.zone_name:
+    #         func.handle_remove_zone(zone_name):
+
+        
 
 class SearchAndReplace(tk.Frame):
     def __init__(self, parent, controller):
