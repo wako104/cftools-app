@@ -18,16 +18,16 @@ class App(tk.Tk):
         self.title('OSAM Websites Cloudflare Tool')
         self.geometry('900x600')
 
-        #--------------- SIDEBAR ---------------
-        self.sidebar = tk.Frame(self)
-        self.sidebar.pack(side='left', fill='y')
-        # dashboard
         self.logo_image = tk.PhotoImage(file=logo_path)
         self.logo = self.logo_image.subsample(5,5)
 
         self.icon = tk.PhotoImage(file=icon_path)
         self.wm_iconphoto(True, self.icon)
-
+        
+        #--------------- SIDEBAR ---------------
+        self.sidebar = tk.Frame(self)
+        self.sidebar.pack(side='left', fill='y')
+        # dashboard
         self.dashboard_btn = ttk.Button(self.sidebar, image=self.logo, command=lambda: self.switch_frame(Dashboard, 'Dashboard'), state='disabled')
         self.dashboard_btn.pack(padx=10, pady=13)
         # separator
@@ -219,10 +219,10 @@ class QuickAddZonePage(tk.Frame):
                 loading_dialog.update('Adding DNS Records...')
                 self.records = func.handle_add_dns_records(self.zone_id, self.selected_records)
                 loading_dialog.complete()
+                self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
             except Exception as e:
                 messagebox.showerror('Error', str(e))
                 loading_dialog.destroy()
-            self.controller.switch_frame(ZoneCompletePage, f'Zone Created ({self.zone_name})', records=self.records, zone_name=self.zone_name, zone_id=self.zone_id, name_servers=self.name_servers)
         else:
             messagebox.showwarning('Input Error', 'Please Enter a Valid Domain Name')
 
@@ -309,52 +309,14 @@ class RemoveZonePage(tk.Frame):
                 messagebox.showerror('Error', str(e))
         
 
-class SearchAndReplace(tk.Frame):
+class SearchAndReplacePage(tk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
 
-
-class RecordErrorDialog(tk.Toplevel):
-    def __init__(self, parent, message):
-        super().__init__(parent)
-        self.title('Error')
-        self.geometry('300x150')
-        self.resizable(False, False)
-        
-        tk.Label(self, text=message, wraplength=280).pack(pady=10)
-
-        button_frame = tk.Frame(self)
-        button_frame.pack(pady=10)
-
-        self.result = None
-
-        abort_button = tk.Button(button_frame, text='Abort', command=self.abort)
-        abort_button.pack(side='left', padx=5)
-
-        retry_button = tk.Button(button_frame, text='Retry', command=self.retry)
-        retry_button.pack(side='left', padx=5)
-
-        skip_button = tk.Button(button_frame, text='Skip this Record', command=self.skip)
-        skip_button.pack(side='left', padx=5)
-
-        self.protocol('WM_DELETE_WINDOW', self.abort)
-
-    def abort(self):
-        self.result = 'abort'
-        self.destroy()
-
-    def retry(self):
-        self.result = 'retry'
-        self.destroy()
-
-    def skip(self):
-        self.result = 'skip'
-        self.destroy()
-
-    def show(self):
-        self.wait_window()
-        return self.result
+        # tabs ->
+            # search and replace dns in one domain
+            # search and replace dns across all domains
 
 
 class LoadingDialog(tk.Toplevel):
