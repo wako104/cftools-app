@@ -33,6 +33,14 @@ def get_cloudflare_accounts():
     else:
         print('Failed to retrieve accounts')
         return []
+    
+def find_zone_id(zone_name):
+    params = {
+        'name': zone_name
+    }
+    url = f'{BASE_URL}/zones'
+    response = rate_limited_request(url=url, method='get', headers=headers, params=params)
+    return response
 
 def create_zone(zone_name, account_id):
     payload = {
@@ -63,4 +71,9 @@ def enable_always_use_https(zone_id):
     }
     url = f'{BASE_URL}/zones/{zone_id}/settings/always_use_https'
     response = rate_limited_request(url=url, method='patch', json=payload, headers=headers)
+    return response
+
+def remove_zone(zone_id):
+    url = f'{BASE_URL}/zones/{zone_id}'
+    response = rate_limited_request(url=url, method='delete', headers=headers)
     return response

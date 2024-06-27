@@ -1,5 +1,4 @@
 import scripts as cf
-from app import RecordErrorDialog
 
 def handle_connection(api_key, email):
     return cf.validate_key(api_key, email)
@@ -38,4 +37,18 @@ def handle_add_dns_records(zone_id, records):
 def handle_response(response):
     if response.status_code != 200:
         return False
+    return True
+
+def handle_remove_zone(zone_name):
+    zone_id_response = cf.find_zone_id(zone_name)
+    data = zone_id_response.json()
+    zones = data['result']
+    if not zones:
+        raise Exception(f'Failed to Remove Zone: Zone not found')
+    zone_id = zones[0]['id']
+
+    response = cf.remove_zone(zone_id)
+    if response.status_code != 200:
+        error_message = response.json().get('errors', [{}])[0].get('message', 'Unknown Error')
+        raise Exception(f'Failed to Remove Zone: {error_message}')
     return True

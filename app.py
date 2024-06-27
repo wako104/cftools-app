@@ -88,7 +88,7 @@ class App(tk.Tk):
         self.dashboard_btn.config(state='normal')
         self.quick_add_zone_btn.config(state='normal')
         # self.add_zone_btn.config(state='normal')
-        # self.rmv_zone_btn.config(state='normal')
+        self.rmv_zone_btn.config(state='normal')
         # self.s_and_r_btn.config(state='normal')
 
 
@@ -298,11 +298,15 @@ class RemoveZonePage(tk.Frame):
         add_zone_btn = ttk.Button(self, text='Remove Zone from Cloudflare', command=self.remove_zone)
         add_zone_btn.pack(pady=10)
 
-    # def remove_zone(self):
-    #     self.zone_name = self.zone_name_entry.get().strip()
-    #     if self.zone_name:
-    #         func.handle_remove_zone(zone_name):
-
+    def remove_zone(self):
+        self.zone_name = self.zone_name_entry.get().strip()
+        if self.zone_name:
+            try:
+                func.handle_remove_zone(self.zone_name)
+                zone_removed_label = ttk.Label(self, text='Zone Successfully Removed')
+                zone_removed_label.pack(pady=(20,10))
+            except Exception as e:
+                messagebox.showerror('Error', str(e))
         
 
 class SearchAndReplace(tk.Frame):
