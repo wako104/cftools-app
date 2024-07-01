@@ -48,7 +48,7 @@ class App(tk.Tk):
         # records
         self.records_label = ttk.Label(self.sidebar, text='DNS Records')
         self.records_label.pack(padx=10, pady=5)
-        self.s_and_r_btn = ttk.Button(self.sidebar, text='Search and Replace', command=lambda: self.switch_frame(SearchAndReplace, 'DNS Search and Replace'), state='disabled')
+        self.s_and_r_btn = ttk.Button(self.sidebar, text='Search and Replace', command=lambda: self.switch_frame(SearchAndReplacePage, 'DNS Search and Replace'), state='disabled')
         self.s_and_r_btn.pack(padx=10, pady=5)
 
         #------------- RIGHT SIDE -------------
@@ -89,7 +89,7 @@ class App(tk.Tk):
         self.quick_add_zone_btn.config(state='normal')
         # self.add_zone_btn.config(state='normal')
         self.rmv_zone_btn.config(state='normal')
-        # self.s_and_r_btn.config(state='normal')
+        self.s_and_r_btn.config(state='normal')
 
 
 class ConnectionPage(tk.Frame):
@@ -289,22 +289,19 @@ class RemoveZonePage(tk.Frame):
         super().__init__(parent)
         self.controller = controller
 
-        zone_entry_label = ttk.Label(self, text='Enter Domain Name: ')
-        zone_entry_label.pack(pady=(20,10))
+        ttk.Label(self, text='Enter Domain Name: ').pack(pady=(20,10))
 
         self.zone_name_entry = ttk.Entry(self, font=('Times', 12), width=30)
         self.zone_name_entry.pack(pady=10)
 
-        add_zone_btn = ttk.Button(self, text='Remove Zone from Cloudflare', command=self.remove_zone)
-        add_zone_btn.pack(pady=10)
+        ttk.Button(self, text='Remove Zone from Cloudflare', command=self.remove_zone).pack(pady=10)
 
     def remove_zone(self):
         self.zone_name = self.zone_name_entry.get().strip()
         if self.zone_name:
             try:
                 func.handle_remove_zone(self.zone_name)
-                zone_removed_label = ttk.Label(self, text='Zone Successfully Removed')
-                zone_removed_label.pack(pady=(20,10))
+                ttk.Label(self, text='Zone Successfully Removed').pack(pady=(20,10))
             except Exception as e:
                 messagebox.showerror('Error', str(e))
         
@@ -317,6 +314,70 @@ class SearchAndReplacePage(tk.Frame):
         # tabs ->
             # search and replace dns in one domain
             # search and replace dns across all domains
+
+        self.record = RecordFrame(self).pack(pady=10, fill='x', expand=True)
+
+
+class RecordFrame(tk.Frame):
+    def __init__(self, parent, record_type='A'):
+        super().__init__(parent)
+        self.input_fields = {}
+        self.record_type_var = tk.StringVar(value=record_type)
+        self.record_types = ['A', 'CNAME', 'MX', 'TXT']
+
+        ttk.Label(self, text='Select Record Type:').pack(pady=5)
+        self.record_type_menu = ttk.Combobox(self, textvariable=self.record_type_var, values=self.record_types, state='readonly')
+        self.record_type_menu.pack(pady=5)
+        self.record_type_menu.bind('<<ComboboxSelected>>', self.display_input_fields)
+
+        self.input_frame = tk.Frame(self)
+        self.input_frame.pack(pady=30, fill='x', expand=True)
+        self.display_input_fields()
+
+    def display_input_fields(self, event=None):
+        # destroy previous input fields
+        for widget in self.input_frame.winfo_children():
+            widget.destroy()
+
+        record_type = self.record_type_var.get()
+
+        fields = {
+            'A': ['Name', 'IP Address', 'Proxy Status', 'TTL'],
+            'CNAME': ['Name', 'Target', 'Proxy Status', 'TTL'],
+            'MX': ['Name', 'Mail Server', 'TTL', 'Priority'],
+            'TXT': ['Name', 'Content', 'TTL']
+        }
+
+        for i, field in enumerate(fields.get(record_type, [])):
+            if i > 0:
+                ttk.Separator(self.input_frame, orient='vertical').pack(side='left', fill='y', padx=8)
+            if field == 'Proxy Status':
+                self.create_proxy_switch()
+            else:
+                label = ttk.Label(self.input_frame, text=field + ':')
+                label.pack(side='left')
+                entry = ttk.Entry(self.input_frame)
+                entry.pack(side='left', fill='x')
+                self.input_fields[field] = entry
+
+    def create_proxy_switch(self):
+
+        proxy_label = ttk.Label(self.input_frame, text='Proxy Status:')
+        proxy_label.pack(side='left')
+
+        self.proxy_var = tk.BooleanVar()
+        proxy_switch = ttk.Checkbutton(self.input_frame, variable=self.proxy_var, command=self.update_proxy_text)
+        proxy_switch.pack(side='left')
+
+        self.proxy_status_text = tk.StringVar(value='On')
+        proxy_status_label = ttk.Label(self.input_frame, textvariable=self.proxy_status_text)
+        proxy_status_label.pack(side='left')
+
+    def update_proxy_text(self):
+        if self.proxy_var.get():
+            self.proxy_status_text.set('On')
+        else:
+            self.proxy_status_text.set('Off')
 
 
 class LoadingDialog(tk.Toplevel):
