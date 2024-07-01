@@ -315,10 +315,10 @@ class SearchAndReplacePage(tk.Frame):
             # search and replace dns in one domain
             # search and replace dns across all domains
 
-        self.record = RecordFrame(self).pack(pady=10, fill='x', expand=True)
+        self.record = RecordEntryFrame(self).pack(pady=10, fill='x', expand=True)
 
 
-class RecordFrame(tk.Frame):
+class RecordEntryFrame(tk.Frame):
     def __init__(self, parent, record_type='A'):
         super().__init__(parent)
         self.input_fields = {}
@@ -342,10 +342,10 @@ class RecordFrame(tk.Frame):
         record_type = self.record_type_var.get()
 
         fields = {
-            'A': ['Name', 'IP Address', 'Proxy Status', 'TTL'],
-            'CNAME': ['Name', 'Target', 'Proxy Status', 'TTL'],
-            'MX': ['Name', 'Mail Server', 'TTL', 'Priority'],
-            'TXT': ['Name', 'Content', 'TTL']
+            'A': ['Name', 'IP Address', 'Proxy Status'],
+            'CNAME': ['Name', 'Target', 'Proxy Status'],
+            'MX': ['Name', 'Mail Server', 'Priority'],
+            'TXT': ['Name', 'Content']
         }
 
         for i, field in enumerate(fields.get(record_type, [])):
