@@ -99,7 +99,7 @@ class App(tk.Tk):
         self.switch_frame(ConnectionPage, 'Connect to Cloudflare Account')
 
     def switch_frame(self, frame_class, header_text, **kwargs):
-        """Switches frame of the main area"""
+        """Switches frame of the main area."""
         if self.current_frame is not None:
             self.current_frame.pack_forget()
             self.current_frame.destroy()
@@ -111,7 +111,7 @@ class App(tk.Tk):
         self.header_label.config(text=header_text)
     
     def enable_sidebar(self):
-        """Enables sidebar options after user establishes connection"""
+        """Enables sidebar options after user establishes connection."""
         self.dashboard_btn.config(state='normal')
         self.quick_add_zone_btn.config(state='normal')
         # self.add_zone_btn.config(state='normal')
@@ -150,7 +150,7 @@ class ConnectionPage(tk.Frame):
         conn_btn.pack(pady=5)
 
     def conn(self):
-        """Connect to Cloudflare account using input fields"""
+        """Connect to Cloudflare account using input fields."""
         api_key = self.api_key.get()
         email = self.email.get()
 
@@ -175,7 +175,7 @@ class ConnectionPage(tk.Frame):
 
 
 class AccountSelect(tk.Frame):
-    """Tkinter Frame subclass """
+    """Select which Cloudflare account to make changes to."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -193,6 +193,7 @@ class AccountSelect(tk.Frame):
         go_btn.pack(pady=5)
 
     def select_account(self):
+        """Sets the selected account and enables the sidebar."""
         global account_id
         account_id = next(
             (id for id, name in self.accounts if name == self.account_var.get()), 
@@ -205,6 +206,7 @@ class AccountSelect(tk.Frame):
 
 
 class Dashboard(tk.Frame):
+    """Tkinter Frame subclass representing the dashboard page."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -216,6 +218,7 @@ class Dashboard(tk.Frame):
 
 
 class QuickAddZonePage(tk.Frame):
+    """Quick add zone page. Add a zone with one of the options for default records."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -252,6 +255,7 @@ class QuickAddZonePage(tk.Frame):
         self.add_zone_btn.pack(pady=10)
 
     def add_zone(self):
+        """Add a zone to Cloudflare with default records."""
         self.zone_name = self.zone_name_entry.get().strip()
         if self.zone_name:
             self.selected_records = self.default_records[self.selected_server.get()]
@@ -292,6 +296,7 @@ class AddZonePage(tk.Frame):
 
 
 class ZoneCompletePage(tk.Frame):
+    """This page shows a summary of a Zone and it's DNS records after it has been added."""
     def __init__(self, parent, controller, **kwargs):
         super().__init__(parent)
         self.controller = controller
@@ -346,6 +351,7 @@ class ZoneCompletePage(tk.Frame):
 
 
 class RemoveZonePage(tk.Frame):
+    """Remove a zone from Cloudflare account."""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -368,6 +374,7 @@ class RemoveZonePage(tk.Frame):
         
 
 class SearchAndReplacePage(tk.Frame):
+    """Search for DNS record and replace it with another"""
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -387,6 +394,10 @@ class SearchAndReplacePage(tk.Frame):
 
 
 class RecordEntryFrame(tk.Frame):
+    """
+    Frame for creating a record. Allows a user to choose the record type, then enter the 
+    required data
+    """
     def __init__(self, parent, record_type='A'):
         super().__init__(parent)
         self.input_fields = {}
@@ -480,6 +491,10 @@ class RecordEntryFrame(tk.Frame):
 
 
 class LoadingDialog(tk.Toplevel):
+    """
+    Dialog for when a script is running, giving the user a message of what's currently
+    happening
+    """
     def __init__(self, parent):
         super().__init__(parent)
         self.geometry('300x100')
