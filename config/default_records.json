@@ -1,42 +1,148 @@
 {
-    "d725": [
-        {"type": "A", "name": "@", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "autodiscover", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpanel", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpcalendars", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpcontacts", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "ftp", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "webdisk", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "webmail", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "whm", "content": "77.95.113.61", "ttl": 1, "proxied": true},
-        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
-        {"type": "CNAME", "name": "mail", "content": "d725.lon1.mysecurecloudhost.com", "ttl": 1, "proxied": false},
-        {"type": "MX", "name": "@", "content": "@", "ttl": 1, "priority": 0},
-        {"type": "TXT", "name": "@", "content": "v=spf1 +a +mx +ip4:77.95.113.61 include:spf.mysecurecloudhost.com ~all", "ttl": 1},
-        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
-        {"type": "TXT", "name": "default._domainkey", "content": "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy/oYjFvx02Em4iazyyRZP3zjdhx3mKuwc9qwXBR3APz8TzDvJhY1cOk+5RxnaEcIZ0Tju3WDfor2CJfQ/h/GKGGI/zG67HJ/Oxb2dWjZLmLx71D9UEFyehcyzsxRgyKpOUPxTbzQ5AgO7gTB1cpP41XiH2HB/9NSgYAxR+C0GElgdcXwbKWdA2I1rfpCRM1Oux7sTY41TWE0YrZ/mFNF2eYsKHoByXZqD/aZpNvgEAbZLI9zpBZ7KQXZr8TJKfNMvzKOYJYnuo3KlT7mV+pcIv2BpEVewHi0hGZoOBrYXjbxHmzY5wA61io9VaCG+3wC6vp0yOuIihsCjUBXP0O3OQIDAQAB;", "ttl": 1},
-        {"type": "TXT", "name": "_cpanel-dcv-test-record", "content": "_cpanel-dcv-test-record=3VB2F4Mj1_JzopUJ_tf2ssjMUso_ufNVMwJ93uLgBftBPHODq2a5Dvz7qmlgTAjh", "ttl": 1},
-        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
-        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+    "osam": [
+        {
+            "d725": [
+                {"type": "A", "name": "@", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "autodiscover", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpanel", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpcalendars", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpcontacts", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "ftp", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "webdisk", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "webmail", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "whm", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "mail", "content": "d725.lon1.mysecurecloudhost.com", "ttl": 1, "proxied": false},
+                {"type": "MX", "name": "@", "content": "@", "ttl": 1, "priority": 0},
+                {"type": "TXT", "name": "@", "content": "v=spf1 +a +mx +ip4:77.95.113.61 include:spf.mysecurecloudhost.com ~all", "ttl": 1},
+                {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                {"type": "TXT", "name": "default._domainkey", "content": "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy/oYjFvx02Em4iazyyRZP3zjdhx3mKuwc9qwXBR3APz8TzDvJhY1cOk+5RxnaEcIZ0Tju3WDfor2CJfQ/h/GKGGI/zG67HJ/Oxb2dWjZLmLx71D9UEFyehcyzsxRgyKpOUPxTbzQ5AgO7gTB1cpP41XiH2HB/9NSgYAxR+C0GElgdcXwbKWdA2I1rfpCRM1Oux7sTY41TWE0YrZ/mFNF2eYsKHoByXZqD/aZpNvgEAbZLI9zpBZ7KQXZr8TJKfNMvzKOYJYnuo3KlT7mV+pcIv2BpEVewHi0hGZoOBrYXjbxHmzY5wA61io9VaCG+3wC6vp0yOuIihsCjUBXP0O3OQIDAQAB;", "ttl": 1},
+                {"type": "TXT", "name": "_cpanel-dcv-test-record", "content": "_cpanel-dcv-test-record=3VB2F4Mj1_JzopUJ_tf2ssjMUso_ufNVMwJ93uLgBftBPHODq2a5Dvz7qmlgTAjh", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+            ]
+        },
+        {
+            "d719": [
+                {"type": "A", "name": "@", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "autodiscover", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpanel", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpcalendars", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpcontacts", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "ftp", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "webdisk", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "webmail", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "whm", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "mail", "content": "d719.lon1.mysecurecloudhost.com", "ttl": 1, "proxied": false},
+                {"type": "MX", "name": "@", "content": "@", "ttl": 1, "priority": 0},
+                {"type": "TXT", "name": "@", "content": "v=spf1 +a +mx +ip4:77.95.113.55 include:spf.mysecurecloudhost.com ~all", "ttl": 1},
+                {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                {"type": "TXT", "name": "default._domainkey", "content": "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy/oYjFvx02Em4iazyyRZP3zjdhx3mKuwc9qwXBR3APz8TzDvJhY1cOk+5RxnaEcIZ0Tju3WDfor2CJfQ/h/GKGGI/zG67HJ/Oxb2dWjZLmLx71D9UEFyehcyzsxRgyKpOUPxTbzQ5AgO7gTB1cpP41XiH2HB/9NSgYAxR+C0GElgdcXwbKWdA2I1rfpCRM1Oux7sTY41TWE0YrZ/mFNF2eYsKHoByXZqD/aZpNvgEAbZLI9zpBZ7KQXZr8TJKfNMvzKOYJYnuo3KlT7mV+pcIv2BpEVewHi0hGZoOBrYXjbxHmzY5wA61io9VaCG+3wC6vp0yOuIihsCjUBXP0O3OQIDAQAB;", "ttl": 1},
+                {"type": "TXT", "name": "_cpanel-dcv-test-record", "content": "_cpanel-dcv-test-record=3VB2F4Mj1_JzopUJ_tf2ssjMUso_ufNVMwJ93uLgBftBPHODq2a5Dvz7qmlgTAjh", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+            ]
+        }
     ],
-    "d719": [
-        {"type": "A", "name": "@", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "autodiscover", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpanel", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpcalendars", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "cpcontacts", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "ftp", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "webdisk", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "webmail", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "A", "name": "whm", "content": "77.95.113.55", "ttl": 1, "proxied": true},
-        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
-        {"type": "CNAME", "name": "mail", "content": "d719.lon1.mysecurecloudhost.com", "ttl": 1, "proxied": false},
-        {"type": "MX", "name": "@", "content": "@", "ttl": 1, "priority": 0},
-        {"type": "TXT", "name": "@", "content": "v=spf1 +a +mx +ip4:77.95.113.55 include:spf.mysecurecloudhost.com ~all", "ttl": 1},
-        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
-        {"type": "TXT", "name": "default._domainkey", "content": "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAy/oYjFvx02Em4iazyyRZP3zjdhx3mKuwc9qwXBR3APz8TzDvJhY1cOk+5RxnaEcIZ0Tju3WDfor2CJfQ/h/GKGGI/zG67HJ/Oxb2dWjZLmLx71D9UEFyehcyzsxRgyKpOUPxTbzQ5AgO7gTB1cpP41XiH2HB/9NSgYAxR+C0GElgdcXwbKWdA2I1rfpCRM1Oux7sTY41TWE0YrZ/mFNF2eYsKHoByXZqD/aZpNvgEAbZLI9zpBZ7KQXZr8TJKfNMvzKOYJYnuo3KlT7mV+pcIv2BpEVewHi0hGZoOBrYXjbxHmzY5wA61io9VaCG+3wC6vp0yOuIihsCjUBXP0O3OQIDAQAB;", "ttl": 1},
-        {"type": "TXT", "name": "_cpanel-dcv-test-record", "content": "_cpanel-dcv-test-record=3VB2F4Mj1_JzopUJ_tf2ssjMUso_ufNVMwJ93uLgBftBPHODq2a5Dvz7qmlgTAjh", "ttl": 1},
-        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
-        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+
+    "googleWorkspace": [
+        {
+            "old": [
+                {
+                    "d725": [
+                        {"type": "A", "name": "@", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "cpanel", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "ftp", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "whm", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                        {"type": "MX", "name": "@", "content": "ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 1},
+                        {"type": "MX", "name": "@", "content": "ALT1.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 5},
+                        {"type": "MX", "name": "@", "content": "ALT2.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 5},
+                        {"type": "MX", "name": "@", "content": "ALT3.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 10},
+                        {"type": "MX", "name": "@", "content": "ALT4.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 10},
+                        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+                    ]
+                },
+                {
+                    "d719": [
+                        {"type": "A", "name": "@", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "cpanel", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "ftp", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "whm", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                        {"type": "MX", "name": "@", "content": "ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 1},
+                        {"type": "MX", "name": "@", "content": "ALT1.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 5},
+                        {"type": "MX", "name": "@", "content": "ALT2.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 5},
+                        {"type": "MX", "name": "@", "content": "ALT3.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 10},
+                        {"type": "MX", "name": "@", "content": "ALT4.ASPMX.L.GOOGLE.COM", "ttl": 1, "priority": 10},
+                        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+                    ]
+                }
+            ]
+        },
+        {
+            "new": [
+                {
+                    "d725": [
+                        {"type": "A", "name": "@", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "cpanel", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "ftp", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "whm", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                        {"type": "MX", "name": "@", "content": "SMTP.GOOGLE.COM", "ttl": 1, "priority": 1},
+                        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+                    ]
+                },
+                {
+                    "d719": [
+                        {"type": "A", "name": "@", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "cpanel", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "ftp", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "A", "name": "whm", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                        {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                        {"type": "MX", "name": "@", "content": "SMTP.GOOGLE.COM", "ttl": 1, "priority": 1},
+                        {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                        {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+                    ]
+                }
+            ]
+        }
+    ],
+
+    "office": [
+        {
+            "d725": [
+                {"type": "A", "name": "@", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpanel", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "ftp", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "whm", "content": "77.95.113.61", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                {"type": "MX", "name": "@", "content": "theirdomain-com.mail.protection.outlook.com", "ttl": 1, "priority": 0},
+                {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+            ]
+        },
+        {
+            "d719": [
+                {"type": "A", "name": "@", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "cpanel", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "ftp", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "A", "name": "whm", "content": "77.95.113.55", "ttl": 1, "proxied": true},
+                {"type": "CNAME", "name": "www", "content": "@", "ttl": 1, "proxied": true},
+                {"type": "MX", "name": "@", "content": "", "ttl": 1, "priority": 0},
+                {"type": "TXT", "name": "_dmarc", "content": "v=DMARC1;p=none;", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge", "content": "wEVytMNmhphbvOXAO_N-w1RoNx0eeOGT2ydJ5veFQdo", "ttl": 1},
+                {"type": "TXT", "name": "_acme-challenge.www", "content": "GfVPXq9oENTIIvjEQxYCMM2J7cYkL2lLTdo_Q0Uctec", "ttl": 1}
+            ]
+        }
     ]
 }
